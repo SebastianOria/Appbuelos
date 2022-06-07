@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "817582057185",
+    "project_id": "appbuelos-ef525",
+    "storage_bucket": "appbuelos-ef525.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817582057185:android:836ac0d050a91a1ff039a0",
+        "android_client_info": {
+          "package_name": "com.example.aplicacion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "817582057185-riodrqieb94s7ld6r31kf5sem0sf7e0a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtH1UQSn8_SrN62uWOWo-OciYDoISdUbc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "817582057185-riodrqieb94s7ld6r31kf5sem0sf7e0a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
