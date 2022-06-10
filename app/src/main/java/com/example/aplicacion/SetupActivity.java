@@ -6,8 +6,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,9 +18,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -30,9 +36,11 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.File;
 import java.util.HashMap;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class SetupActivity extends AppCompatActivity {
     private EditText nombre;
-    private Button Guardar;
+    private Button guardarinfo;
     private CircleImageView image_setup;
     private FirebaseAuth auth;
     private DatabaseReference UserRef;
@@ -42,42 +50,73 @@ public class SetupActivity extends AppCompatActivity {
     private StorageReference UserProfileImagen;
     private Toolbar toolbar;
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
-        nombre =(EditText) findViewById(R.id.nombre_setup);
-        image_setup = (CircleImageView) findViewById(R.id.image_setup);
-        toolbar = (Toolbar) findViewById(R.id.toolbar_setup);
-        setSupportActionBar(toolbar);
+        nombre = (EditText) findViewById(R.id.nombre_setup);
+        image_setup = (CircleImageView) findViewById(R.id.imagen_setup);
+        toolbar = (Toolbar) findViewById(R.id.app_main_toolbar);
 
+        guardarinfo = (Button) findViewById(R.id.bottom_setup);
         dialog = new ProgressDialog(this);
         auth = FirebaseAuth.getInstance();
         CurrentUserID = auth.getCurrentUser().getUid();
         UserRef = FirebaseDatabase.getInstance().getReference().child("Usuarios");
-        UserProfileImagen= FirebaseStorage.getInstance().getReference().child("ImagePerfil");
+        UserProfileImagen = FirebaseStorage.getInstance().getReference().child("ImagesPerfil");
 
-        guardarinfo.setOnClickListener(new View.OnClickListener(){
+        guardarinfo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
 
                 GuardarInformacionDB();
             }
         });
-        image_setup.setOnClickListener(new View.OnClickListener(){
+        image_setup.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/");
+                intent.setType("image/*");
                 startActivityForResult(intent, Gallery_PICK);
 
             }
 
         });
+
+        UserRef.child(CurrentUserID).addValueEventListener(new ValueEventListener() {
             @Override
-                    protected void onActivityResult(int requestCode,int resultCode,@Nullable Intent data){
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    if(snapshot.hasChild("imagen")){
+                        
+                        String imagen = snapshot.child("imagen").getValue().toString();
+                        Picasso.get()
+                                .load(imagen)
+                                .placeholder(R.drawable.foto)
+                                .error(R.drawable.foto)
+                                .into(image_setup);
+                                                
+                    }else{
+
+                        Toast.makeText(SetupActivity.this, "Puede cargar una imagen", Toast.LENGTH_SHORT).show();
+                    }
+                    
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+                @Override
+
+                protected void onActivityResult(int requestCode,int resultCode,@Nullable Intent data){
                 super.onActivityResult(requestCode, resultCode, data);
-                if(requestCode==Gallery_PICK && requestCode== RESULT_OK && data != null){
+                if(requestCode==Gallery_PICK && resultCode== RESULT_OK && data != null){
                     Uri imageUri = data.getData();
                     CropImage.activity()
                             .setGuidelines(CropImageView.Guidelines.ON)
@@ -95,25 +134,25 @@ public class SetupActivity extends AppCompatActivity {
                         dialog.show();
 
                         final Uri resultUri = result.getUri();
-                        StorageReference filePath = UserProfileImagen.child(CurrentUserID+ ".jpg");
+                        StorageReference filePath = UserProfileImagen.child(CurrentUserID+" .jpg");
                         final File url = new File(resultUri.getPath());
                         filePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                 if (task.isSuccessful()){
                                     Toast.makeText(SetupActivity.this, "imagen guardada", Toast.LENGTH_SHORT).show();
-                                    UserProfileImagen.child(CurrentUserID+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    UserProfileImagen.child(CurrentUserID).child(CurrentUserID+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                         @Override
                                         public void onSuccess(Uri uri) {
                                             final String downloadUri = uri.toString();
-                                            UserRef.child("imagen").setValue(downloadUri)
+                                            UserRef.child(CurrentUserID).child("imagen").setValue(downloadUri)
                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                                 if(task.isSuccessful()){
                                                                     Picasso.get()
                                                                             .load(downloadUri)
-                                                                            .error(R.drawable.welcome)
+                                                                            .error(R.drawable.foto)
                                                                             .into(image_setup);
                                                                     Toast.makeText(SetupActivity.this, "Imagen se guardo", Toast.LENGTH_SHORT).show();
                                                                     dialog.dismiss();
@@ -137,7 +176,7 @@ public class SetupActivity extends AppCompatActivity {
 
             }
 
-    }
+
 
     private void GuardarInformacionDB() {
         String nom = nombre.getText().toString();
@@ -153,7 +192,7 @@ public class SetupActivity extends AppCompatActivity {
             HashMap map = new HashMap();
             map.put("nombre", nom);
 
-            UserRef.updateChildren(map).addOnCompleteListener(new OnCompleteListener() {
+            UserRef.child(CurrentUserID).updateChildren(map).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
                     if(task.isSuccessful()){

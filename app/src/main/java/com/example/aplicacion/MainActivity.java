@@ -6,6 +6,10 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -14,11 +18,16 @@ public class MainActivity extends AppCompatActivity {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
+        FirebaseApp.initializeApp(this);
       Thread thread  = new Thread(){
 
           @Override
           public void run() {
               try {
+
+                  FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+                  firebaseAppCheck.installAppCheckProviderFactory(
+                          PlayIntegrityAppCheckProviderFactory.getInstance());
                   sleep(2000);
 
 
@@ -38,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
       }
       @Override
     protected void onPause(){
-
         super.onPause();
         finish();
 
