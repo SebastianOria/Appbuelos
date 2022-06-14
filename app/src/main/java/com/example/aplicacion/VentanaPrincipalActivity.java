@@ -2,6 +2,8 @@ package com.example.aplicacion;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -61,11 +63,11 @@ public class VentanaPrincipalActivity extends AppCompatActivity
     }
     private void VerificarUsuario() {
         final String currentUserID = mAuth.getCurrentUser().getUid();
-        UserRef.addValueEventListener(new ValueEventListener() {
+
+        UserRef.child(CurrentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.hasChild(currentUserID)) {
-
+                if (!snapshot.hasChild("nombre")) {
                     CompletarDatosUsuario();
                 }
             }
@@ -90,7 +92,32 @@ public class VentanaPrincipalActivity extends AppCompatActivity
             finish();
         }
 
+
+        @Override
+            public boolean onCreateOptionsMenu(Menu menu){
+                super.onCreateOptionsMenu(menu);
+                getMenuInflater().inflate(R.menu.menu_opciones, menu);
+                return true;
+
+        }
+
+        @Override
+            public boolean onOptionsItemSelected(@NonNull MenuItem item){
+                super.onOptionsItemSelected(item);
+                    if(item.getItemId() == R.id.ajustes) AjustesActivity();
+                return true;
+
+        }
+
+    private void AjustesActivity() {
+        Intent intent = new Intent(VentanaPrincipalActivity.this, AjustesActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+
     }
+
+}
 
 
 

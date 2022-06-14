@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,10 +25,9 @@ public class MainActivity extends AppCompatActivity {
           @Override
           public void run() {
               try {
-
                   FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
                   firebaseAppCheck.installAppCheckProviderFactory(
-                          PlayIntegrityAppCheckProviderFactory.getInstance());
+                          DebugAppCheckProviderFactory.getInstance());
                   sleep(2000);
 
 

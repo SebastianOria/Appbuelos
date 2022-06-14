@@ -23,7 +23,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
@@ -35,6 +41,9 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ProgressDialog loadingBar;
     private String phoneNumber;
+    private String  CurrentUserID;
+    private FirebaseAuth auth;
+    private DatabaseReference RootRef;
 
 
 
@@ -72,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                                         .setCallbacks(callbacks)
                                         .build();
                                 PhoneAuthProvider.verifyPhoneNumber(options);
+
                     }
             }
         });
@@ -143,7 +153,33 @@ private void signInPhoneAuthCredential(PhoneAuthCredential credential){
                 if(task.isSuccessful()){
                     loadingBar.dismiss();
                     Toast.makeText(LoginActivity.this, "Ingresado Con Exito", Toast.LENGTH_SHORT).show();
+                    RootRef = FirebaseDatabase.getInstance().getReference();
+                    auth = FirebaseAuth.getInstance();
+                    CurrentUserID= auth.getCurrentUser().getUid();
+                    String num = numero.getText().toString();
+                    String rt = rut.getText().toString();
+                    HashMap map = new HashMap();
+                    map.put("Rut", rt);
+                    map.put("Telefono", num);
+
+                    RootRef.child("Usuarios").child(CurrentUserID).updateChildren(map).addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            if(task.isSuccessful()) {
+                                Toast.makeText(LoginActivity.this, "Datos Guardados", Toast.LENGTH_SHORT).show();
+
+                            }else{
+
+                                String err = task.getException().getMessage();
+                                Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+
                     EnviarAlInicio();
+
+
 
                 }else{
 

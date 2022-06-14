@@ -9,80 +9,95 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.widget.Toolbar;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageActivity;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.File;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SetupActivity extends AppCompatActivity {
+public class AjustesPerfilActivity extends AppCompatActivity {
+
     private EditText nombre;
-    private Button guardarinfo;
-    private CircleImageView image_setup;
+    private Button actualizar;
+    private String rut, telefono;
+    private CircleImageView imageperfil;
+    private Toolbar toolbar;
+    private String  CurrentUserID;
     private FirebaseAuth auth;
-    private DatabaseReference UserRef;
-    private ProgressDialog dialog;
-    private String CurrentUserID;
+    private DatabaseReference RootRef;
     final static int Gallery_PICK = 1;
+    private ProgressDialog dialog;
     private static final int COD_SEL_IMAGE= 300;
     private Uri image_url;
     StorageReference  storageReference;
     String storagepath = "imgperfil/*";
 
 
-    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setup);
-        nombre = (EditText) findViewById(R.id.nombre_setup);
-        image_setup = (CircleImageView) findViewById(R.id.imagen_setup);
-        toolbar = (Toolbar) findViewById(R.id.app_main_toolbar);
+        setContentView(R.layout.activity_ajustar_perfil);
 
-        guardarinfo = (Button) findViewById(R.id.bottom_setup);
-        dialog = new ProgressDialog(this);
-        auth = FirebaseAuth.getInstance();
-        CurrentUserID = auth.getCurrentUser().getUid();
-        UserRef = FirebaseDatabase.getInstance().getReference().child("Usuarios");
-        storageReference = FirebaseStorage.getInstance().getReference();
-
-
-        guardarinfo.setOnClickListener(new View.OnClickListener() {
+        Componentes();
+        actualizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                GuardarInformacionDB();
+                ActualizarInformacion();
             }
         });
-        image_setup.setOnClickListener(new View.OnClickListener() {
+        RootRef = FirebaseDatabase.getInstance().getReference();
+        auth = FirebaseAuth.getInstance();
+        CurrentUserID= auth.getCurrentUser().getUid();
+        RootRef.child("Usuarios").child(CurrentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String nom1 = snapshot.child("nombre").getValue().toString();
+                    String imagen1 = snapshot.child("Foto").getValue().toString();
+                    String rut1 = snapshot.child("Rut").getValue().toString();
+                    String telefono1 = snapshot.child("Telefono").getValue().toString();
+
+                    telefono = telefono1;
+                    rut = rut1;
+
+
+                    nombre.setText(nom1);
+                    Picasso.with(AjustesPerfilActivity.this)
+                            .load(imagen1)
+                            .placeholder(R.drawable.foto)
+                            .into(imageperfil);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        imageperfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               uploadPhoto();
+                uploadPhoto();
             }
 
         });
@@ -125,16 +140,16 @@ public class SetupActivity extends AppCompatActivity {
                                 String url ="Foto"+ download_Uri;
                                 HashMap map = new HashMap();
                                 map.put("Foto", download_Uri);
-                                UserRef.child(CurrentUserID).updateChildren(map).addOnSuccessListener(new OnSuccessListener() {
+                                RootRef.child(CurrentUserID).updateChildren(map).addOnSuccessListener(new OnSuccessListener() {
                                     @Override
                                     public void onSuccess(Object o) {
                                         dialog.dismiss();
                                     }
                                 });
-                                Picasso.with(SetupActivity.this)
+                                Picasso.with(AjustesPerfilActivity.this)
                                         .load(url)
                                         .placeholder(R.drawable.foto)
-                                        .into(image_setup);
+                                        .into(imageperfil);
 
                             }
 
@@ -147,44 +162,32 @@ public class SetupActivity extends AppCompatActivity {
     }
 
 
-    private void GuardarInformacionDB() {
-        String nom = nombre.getText().toString();
+    private void ActualizarInformacion() {
+    String nom = nombre.getText().toString();
+    String tel = telefono;
+    String rt = rut;
 
-        if(TextUtils.isEmpty(nom)){
-            Toast.makeText(this, "Debe ingresar nombre", Toast.LENGTH_SHORT).show();
+    if(TextUtils.isEmpty(nom)){
+        Toast.makeText(this, "Ingrese su nombre", Toast.LENGTH_SHORT).show();
+    }else{
+        HashMap  profile = new HashMap();
+        profile.put("uid", CurrentUserID);
+        profile.put("nombre", nom);
 
-        }else {
-            dialog.setTitle("Guardando datos");
-            dialog.setMessage("Por favor espere a que finalize el procesp");
-            dialog.show();
-            dialog.setCanceledOnTouchOutside(false);
+        RootRef.child("Usuarios").child(CurrentUserID).updateChildren(profile);
 
-            HashMap map = new HashMap();
-            map.put("nombre", nom);
-
-
-            UserRef.child(CurrentUserID).updateChildren(map).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if(task.isSuccessful()){
-                        Toast.makeText(SetupActivity.this, "Datos Guardados", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                        EnviarALInicio();
-
-                    }else{
-
-                        String err = task.getException().getMessage();
-                        Toast.makeText(SetupActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
     }
 
-    private void EnviarALInicio() {
-        Intent intent = new Intent(SetupActivity.this, VentanaPrincipalActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
     }
+
+    private void Componentes() {
+        nombre = (EditText) findViewById(R.id.nombre_perfil);
+       actualizar = (Button)findViewById(R.id.boton_perfil) ;
+        imageperfil = (CircleImageView) findViewById(R.id.imagen_perfil);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_setup);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Actualizar Perfil");
+        dialog = new ProgressDialog(this);
+    }
+
 }

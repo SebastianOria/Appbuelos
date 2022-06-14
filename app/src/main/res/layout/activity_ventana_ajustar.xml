@@ -11,7 +11,10 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="12dp"
         android:text="Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.012"
@@ -19,20 +22,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="340dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.68"
-        app:layout_constraintStart_toEndOf="@+id/textView3" />
-
-    <Button
         android:id="@+id/button5"
         android:layout_width="143dp"
         android:layout_height="63dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="126dp"
+        android:layout_marginBottom="99dp"
         android:text="Button"
         tools:layout_editor_absoluteX="131dp"
         tools:layout_editor_absoluteY="505dp" />
@@ -41,9 +37,13 @@
         android:id="@+id/textView6"
         android:layout_width="123dp"
         android:layout_height="47dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+
+        android:layout_marginEnd="144dp"
+        android:layout_marginBottom="641dp"
         android:text="Ajustes"
         android:textSize="32dp"
-
         app:layout_constraintBottom_toTopOf="@+id/textView5"
         app:layout_constraintTop_toBottomOf="@+id/button2"
         app:layout_constraintVertical_bias="0.142"
@@ -53,20 +53,27 @@
         android:id="@+id/textView5"
         android:layout_width="292dp"
         android:layout_height="94dp"
-        android:layout_marginBottom="72dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="66dp"
+        android:layout_marginBottom="492dp"
         android:text="Tamaño de Fuente"
+
         android:textSize="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView3"
+
         tools:layout_editor_absoluteX="30dp" />
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="224dp"
-        android:layout_height="109dp"
-        android:layout_marginBottom="84dp"
-        android:text="Tono de Notificacion"
-        android:textSize="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/button5"
-        tools:layout_editor_absoluteX="43dp" />
+        android:id="@+id/ventanaAjustar"
+        android:layout_width="280dp"
+        android:layout_height="51dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="69dp"
+        android:layout_marginEnd="62dp"
+        android:layout_marginBottom="321dp"
+        android:text="Ajustes de Perfil"
+        android:textSize="30dp" />
 
 </RelativeLayout>
