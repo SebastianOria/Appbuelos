@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/chat_toolbar"
+        layout="@layout/toolbar_principal">
+
+    </include>
+    □<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/listamensajesrecicler"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@+id/chat_toolbar">
+
+</androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/chat_linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/mensaje"
+            android:layout_width="887dp"
+            android:layout_height="118dp"
+            android:hint="Ingrese el mensaje"
+            android:background="@drawable/back"
+            android:padding="10dp" />
+
+        <ImageView
+            android:id="@+id/enviar_mensaje_boton"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/send"
+
+            />
+
+
+    </LinearLayout>
+
+
+
+
+
+</RelativeLayout>

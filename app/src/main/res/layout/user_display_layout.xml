@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imagen_contacto"
+        android:layout_width="134dp"
+        android:layout_height="114dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/foto" />
+
+    <TextView
+        android:id="@+id/nombre_contacto"
+        android:layout_width="206dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imagen_contacto"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-9dp"
+
+        android:layout_marginEnd="53dp"
+        android:layout_marginBottom="136dp"
+        android:text="nombre"
+        android:textSize="34dp" />
+</RelativeLayout>

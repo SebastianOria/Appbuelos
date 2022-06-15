@@ -22,6 +22,7 @@
         android:layout_below="@id/imagen_perfil"
         android:layout_marginTop="20dp"
         android:padding="10dp"
+        android:background="@drawable/back"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
 
