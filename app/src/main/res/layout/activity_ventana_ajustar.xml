@@ -9,13 +9,15 @@
 
     <Button
         android:id="@+id/button5"
-        android:layout_width="143dp"
-        android:layout_height="63dp"
+        android:layout_width="221dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="126dp"
-        android:layout_marginBottom="99dp"
-        android:text="Button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="96dp"
+        android:layout_marginBottom="107dp"
+        android:background="@drawable/botones"
+        android:text="Guardar"
         tools:layout_editor_absoluteX="131dp"
         tools:layout_editor_absoluteY="505dp" />
 
@@ -23,12 +25,15 @@
         android:id="@+id/textView6"
         android:layout_width="123dp"
         android:layout_height="47dp"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="144dp"
         android:layout_marginEnd="144dp"
-        android:layout_marginBottom="641dp"
+        android:layout_marginBottom="634dp"
         android:text="Ajustes"
+        android:textColor="@color/black"
         android:textSize="32dp"
         app:layout_constraintBottom_toTopOf="@+id/textView5"
         app:layout_constraintVertical_bias="0.142"
@@ -40,13 +45,16 @@
         android:layout_height="94dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="66dp"
-        android:layout_marginBottom="492dp"
-        android:text="Tamaño de Fuente"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="61dp"
+        android:layout_marginBottom="490dp"
 
+        android:text="Tamaño de Fuente"
+        android:textColor="@color/black"
         android:textSize="32dp"
 
-        tools:layout_editor_absoluteX="30dp" />
+
+        />
 
     <TextView
         android:id="@+id/ventanaAjustar"
@@ -55,10 +63,12 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="69dp"
-        android:layout_marginEnd="62dp"
-        android:layout_marginBottom="321dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="65dp"
+        android:layout_marginEnd="66dp"
+        android:layout_marginBottom="319dp"
         android:text="Ajustes de Perfil"
+        android:textColor="@color/black"
         android:textSize="30dp" />
 
 </RelativeLayout>

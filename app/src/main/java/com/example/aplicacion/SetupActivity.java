@@ -122,7 +122,7 @@ public class SetupActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(Uri uri) {
                                 String download_Uri = uri.toString();
-                                String url ="Foto"+ download_Uri;
+                               final String url ="Foto"+ download_Uri;
                                 HashMap map = new HashMap();
                                 map.put("Foto", download_Uri);
                                 UserRef.child(CurrentUserID).updateChildren(map).addOnSuccessListener(new OnSuccessListener() {
@@ -131,7 +131,7 @@ public class SetupActivity extends AppCompatActivity {
                                         dialog.dismiss();
                                     }
                                 });
-                                Picasso.with(SetupActivity.this)
+                                Picasso.get()
                                         .load(url)
                                         .placeholder(R.drawable.foto)
                                         .into(image_setup);

@@ -15,6 +15,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:text="Button"
+        android:background="@drawable/botones"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,6 +25,7 @@
         android:layout_height="53dp"
         android:layout_marginBottom="68dp"
         android:text="Button"
+        android:background="@drawable/botones"
         app:layout_constraintBottom_toTopOf="@+id/button8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -35,6 +37,7 @@
         android:layout_height="53dp"
         android:layout_marginBottom="204dp"
         android:text="Button"
+        android:background="@drawable/botones"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

@@ -31,6 +31,7 @@
         <activity android:name=".SetupActivity"></activity>
         <activity android:name=".AjustesActivity"></activity>
         <activity android:name=".AjustesPerfilActivity"></activity>
+        <activity android:name=".ChatActivity"></activity>
         <activity
             android:name=".LoginActivity"
             android:exported="true">

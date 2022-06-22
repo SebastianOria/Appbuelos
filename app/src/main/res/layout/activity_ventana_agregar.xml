@@ -48,8 +48,9 @@
         android:layout_width="323dp"
         android:layout_height="51dp"
         android:layout_marginBottom="220dp"
-        android:background="@color/botones"
+
         android:text="Siguiente"
+        android:background="@drawable/botones"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.409"

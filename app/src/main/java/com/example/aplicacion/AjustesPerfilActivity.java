@@ -80,7 +80,7 @@ public class AjustesPerfilActivity extends AppCompatActivity {
 
 
                     nombre.setText(nom1);
-                    Picasso.with(AjustesPerfilActivity.this)
+                    Picasso.get()
                             .load(imagen1)
                             .placeholder(R.drawable.foto)
                             .into(imageperfil);
@@ -146,7 +146,7 @@ public class AjustesPerfilActivity extends AppCompatActivity {
                                         dialog.dismiss();
                                     }
                                 });
-                                Picasso.with(AjustesPerfilActivity.this)
+                                Picasso.get()
                                         .load(url)
                                         .placeholder(R.drawable.foto)
                                         .into(imageperfil);

@@ -159,8 +159,8 @@ private void signInPhoneAuthCredential(PhoneAuthCredential credential){
                     String num = numero.getText().toString();
                     String rt = rut.getText().toString();
                     HashMap map = new HashMap();
-                    map.put("Rut", rt);
-                    map.put("Telefono", num);
+                    map.put("Rut", num);
+                    map.put("Telefono", rt);
 
                     RootRef.child("Usuarios").child(CurrentUserID).updateChildren(map).addOnCompleteListener(new OnCompleteListener() {
                         @Override

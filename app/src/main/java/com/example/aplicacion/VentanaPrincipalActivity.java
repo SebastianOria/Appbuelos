@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -28,7 +29,8 @@ public class VentanaPrincipalActivity extends AppCompatActivity
     private AdapterTabs adapter;
     private String CurrentUserId;
     private FirebaseAuth mAuth;
-    private DatabaseReference UserRef;
+    private DatabaseReference databaseReference;
+    private RecyclerView messagesRecyclerView;
 
 
 
@@ -47,7 +49,7 @@ public class VentanaPrincipalActivity extends AppCompatActivity
         mytabLayout = (TabLayout) findViewById(R.id.main_tabs);
         mytabLayout.setupWithViewPager(myviewPager);
 
-        UserRef  = FirebaseDatabase.getInstance().getReference().child("Usuarios");
+        databaseReference  = FirebaseDatabase.getInstance().getReference().child("Usuarios");
         mAuth = FirebaseAuth.getInstance();
         CurrentUserId = mAuth.getCurrentUser().getUid();
     }
@@ -64,7 +66,7 @@ public class VentanaPrincipalActivity extends AppCompatActivity
     private void VerificarUsuario() {
         final String currentUserID = mAuth.getCurrentUser().getUid();
 
-        UserRef.child(CurrentUserId).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(CurrentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.hasChild("nombre")) {
@@ -116,6 +118,8 @@ public class VentanaPrincipalActivity extends AppCompatActivity
         finish();
 
     }
+
+
 
 }
 
