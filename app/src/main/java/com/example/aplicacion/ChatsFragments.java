@@ -1,8 +1,6 @@
 package com.example.aplicacion;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,11 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.clases.Mensaje;
+import com.example.clases.Contactos;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,13 +31,14 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatsFragments extends Fragment {
-    private static final List<Mensaje> mensajelists = new ArrayList<>();
+
     private View ChatViewUnica;
     private RecyclerView ChatLista;
     private DatabaseReference databaseReference, contactosRef;
 
     private static FirebaseAuth auth = FirebaseAuth.getInstance();
     private static String CurrentUserId = auth.getCurrentUser().getUid();
+
 
 
     public ChatsFragments() {
@@ -52,7 +49,7 @@ public class ChatsFragments extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Usuarios");
         contactosRef = FirebaseDatabase.getInstance().getReference().child(CurrentUserId);
         ChatViewUnica = inflater.inflate(R.layout.fragment_chats_fragments, container, false);
         ChatLista = (RecyclerView) ChatViewUnica.findViewById(R.id.chat_lista);
@@ -67,54 +64,53 @@ public class ChatsFragments extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-            FirebaseRecyclerOptions<Mensaje> options = new FirebaseRecyclerOptions.Builder<Mensaje>()
-                    .setQuery(databaseReference, Mensaje.class).build();
-        FirebaseRecyclerAdapter<Mensaje, ChatsViewHolder> adapter = new FirebaseRecyclerAdapter<Mensaje, ChatsViewHolder>(options) {
+            FirebaseRecyclerOptions<Contactos> options = new FirebaseRecyclerOptions.Builder<Contactos>()
+                    .setQuery(databaseReference, Contactos.class).build();
+        FirebaseRecyclerAdapter<Contactos, ChatsViewHolder> adapter = new FirebaseRecyclerAdapter<Contactos, ChatsViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull ChatsViewHolder chatsViewHolder, int i, @NonNull Mensaje model) {
+            protected void onBindViewHolder(@NonNull ChatsViewHolder chatsViewHolder, int i, @NonNull Contactos model) {
+                final String[] getPic = {"default"};
                 databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if(snapshot.exists()){
-                                for(DataSnapshot dataSnapshot : snapshot.child("Usuarios").getChildren()) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 
-                                    final String getuid = getRef(i).getKey();
-
-
-                                    if (!getuid.equals(CurrentUserId)) {
-                                        final String getName = dataSnapshot.child("nombre").getValue().toString();
-
-                                        final String getPic = dataSnapshot.child("Foto").getValue().toString();
-
-                                        Picasso.get()
-                                                .load(getPic)
-                                                .placeholder(R.drawable.foto)
-                                                .into(chatsViewHolder.profilePic);
+                                String getuid = dataSnapshot.getKey();
 
 
+                                if (!getuid.equals(CurrentUserId)) {
+                                    final String getName = dataSnapshot.child("nombre").getValue().toString();
 
-                                        chatsViewHolder.name.setText(getName);
+                                    getPic[0] = dataSnapshot.child("Foto").getValue().toString();
 
-                                        chatsViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Intent intent = new Intent(getContext(), ChatActivity.class);
-                                                intent.putExtra("user_id", getuid);
-                                                intent.putExtra("user_nombre", getName);
-                                                startActivity(intent);
-                                            }
-                                        });
+                                    Picasso.get()
+                                            .load(getPic[0])
+                                            .placeholder(R.drawable.foto)
+                                            .into(chatsViewHolder.profilePic);
 
-                                    }
+
+                                    chatsViewHolder.name.setText(getName);
+
+                                    chatsViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent(getContext(), ChatActivity.class);
+                                            intent.putExtra("user_id", getuid);
+                                            intent.putExtra("user_nombre", getName);
+                                            intent.putExtra("user_imagen", getPic[0]);
+                                            startActivity(intent);
+                                        }
+                                    });
 
                                 }
 
+                            }
 
 
                             }
 
 
-                    }
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
@@ -136,7 +132,7 @@ public class ChatsFragments extends Fragment {
 
     public static class ChatsViewHolder extends RecyclerView.ViewHolder {
         private CircleImageView profilePic;
-        private TextView name, lastMessage, unseenMessages;
+        private TextView name;
 
 
         public ChatsViewHolder(@NonNull View itemView) {

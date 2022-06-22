@@ -1,15 +1,16 @@
 package com.example.clases;
 
-import java.util.Date;
 
-public class Mensaje {
-    private String nombre, id, lastMessage, profilepic;
-    private int unseenMessajes;
 
-    public Mensaje() {
+public class Contactos {
+    private String nombre, id, profilepic;
+
+
+    public Contactos() {
     }
 
-    public Mensaje(String nombre, String profilepic) {
+    public Contactos(String nombre, String id, String profilepic) {
+        this.id = id;
         this.nombre = nombre;
         this.profilepic = profilepic;
     }
@@ -22,6 +23,13 @@ public class Mensaje {
         this.nombre = nombre;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getProfilepic() {
         return profilepic;
