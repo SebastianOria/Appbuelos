@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class ChatsFragments extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Usuarios");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         contactosRef = FirebaseDatabase.getInstance().getReference().child(CurrentUserId);
         ChatViewUnica = inflater.inflate(R.layout.fragment_chats_fragments, container, false);
         ChatLista = (RecyclerView) ChatViewUnica.findViewById(R.id.chat_lista);
@@ -64,54 +65,48 @@ public class ChatsFragments extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-            FirebaseRecyclerOptions<Contactos> options = new FirebaseRecyclerOptions.Builder<Contactos>()
-                    .setQuery(databaseReference, Contactos.class).build();
-        FirebaseRecyclerAdapter<Contactos, ChatsViewHolder> adapter = new FirebaseRecyclerAdapter<Contactos, ChatsViewHolder>(options) {
+        FirebaseRecyclerOptions<Contactos> options =
+                new FirebaseRecyclerOptions.Builder<Contactos>().setQuery(databaseReference.child("Usuarios"), Contactos.class).build();
+        FirebaseRecyclerAdapter<Contactos, ChatsViewHolder> adapter =
+                new FirebaseRecyclerAdapter<Contactos, ChatsViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull ChatsViewHolder chatsViewHolder, int i, @NonNull Contactos model) {
-                final String[] getPic = {"default"};
-                databaseReference.addValueEventListener(new ValueEventListener() {
+            protected void onBindViewHolder(@NonNull ChatsViewHolder chatsViewHolder, int i, @NonNull Contactos contactos) {
+
+                databaseReference.child("Usuarios").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
 
-                                String getuid = dataSnapshot.getKey();
+                           final String getuid = dataSnapshot.getKey();
 
+                            if (!getuid.equals(CurrentUserId)) {
+                                final String getName = dataSnapshot.child("nombre").getValue().toString();
+                                final String getPic = dataSnapshot.child("Foto").getValue().toString();
 
-                                if (!getuid.equals(CurrentUserId)) {
-                                    final String getName = dataSnapshot.child("nombre").getValue().toString();
+                                Picasso.get()
+                                        .load(getPic)
+                                        .placeholder(R.drawable.foto)
+                                        .into(chatsViewHolder.profilePic);
 
-                                    getPic[0] = dataSnapshot.child("Foto").getValue().toString();
-
-                                    Picasso.get()
-                                            .load(getPic[0])
-                                            .placeholder(R.drawable.foto)
-                                            .into(chatsViewHolder.profilePic);
-
-
-                                    chatsViewHolder.name.setText(getName);
-
-                                    chatsViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent intent = new Intent(getContext(), ChatActivity.class);
-                                            intent.putExtra("user_id", getuid);
-                                            intent.putExtra("user_nombre", getName);
-                                            intent.putExtra("user_imagen", getPic[0]);
-                                            startActivity(intent);
-                                        }
-                                    });
-
-                                }
-
+                                chatsViewHolder.name.setText(getName);
+                                chatsViewHolder.itemView.setVisibility(View.VISIBLE);
+                                chatsViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(getContext(), ChatActivity.class);
+                                        intent.putExtra("user_id", getuid);
+                                        intent.putExtra("user_nombre", getName);
+                                        intent.putExtra("user_imagen", getPic);
+                                        startActivity(intent);
+                                    }
+                                });
+                            }else{
+                                chatsViewHolder.itemView.setVisibility(View.GONE);
                             }
 
+                        }
 
-                            }
-
-
-
-
+                        }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
@@ -139,9 +134,8 @@ public class ChatsFragments extends Fragment {
             super(itemView);
             profilePic = itemView.findViewById(R.id.profilePic);
             name = itemView.findViewById(R.id.nombre);
-
-
         }
+    }
 
     }
-}
+

@@ -3,16 +3,17 @@ package com.example.clases;
 
 
 public class Contactos {
-    private String nombre, id, profilepic;
+    private String nombre, id, Foto, Telefono;
 
 
     public Contactos() {
     }
 
-    public Contactos(String nombre, String id, String profilepic) {
+    public Contactos( String id, String nombre, String Foto, String Telefono) {
         this.id = id;
         this.nombre = nombre;
-        this.profilepic = profilepic;
+        this.Foto = Foto;
+        this.Telefono = Telefono;
     }
 
     public String getNombre() {
@@ -22,7 +23,6 @@ public class Contactos {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
     public String getId() {
         return id;
     }
@@ -31,13 +31,19 @@ public class Contactos {
         this.id = id;
     }
 
-    public String getProfilepic() {
-        return profilepic;
+    public String getFoto() {
+        return Foto;
     }
 
-    public void setProfilepic(String profilepic) {
-        this.profilepic = profilepic;
+    public void setFoto(String foto) {
+        Foto = foto;
     }
 
+    public String getTelefono() {
+        return Telefono;
+    }
 
+    public void setTelefono(String telefono) {
+        Telefono = telefono;
+    }
 }

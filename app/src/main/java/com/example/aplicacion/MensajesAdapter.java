@@ -1,16 +1,22 @@
 package com.example.aplicacion;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clases.Mensajes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +44,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.Mensaj
     public class MensajesViewHolder extends RecyclerView.ViewHolder{
         public TextView enviarMensajeTexto, recibirMensajeTexto;
         public CircleImageView recibirImagenPerfil;
+        public ImageView mensajeImagenEnviar, mensajeImagenRecibir;
+
 
         public MensajesViewHolder(@NonNull View itemView){
             super(itemView);
@@ -45,6 +53,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.Mensaj
             enviarMensajeTexto=(TextView) itemView.findViewById(R.id.enviar_mensaje);
             recibirMensajeTexto=(TextView) itemView.findViewById(R.id.recibir_mensaje);
             recibirImagenPerfil=(CircleImageView) itemView.findViewById(R.id.mensaje_image_perfil);
+            mensajeImagenEnviar=(ImageView) itemView.findViewById(R.id.mensaje_enviar_imagen);
+            mensajeImagenRecibir=(ImageView) itemView.findViewById(R.id.mensaje_recibir_imagen);
 
         }
 
@@ -83,19 +93,23 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.Mensaj
         });
 
 
+        holder.enviarMensajeTexto.setVisibility(View.GONE);
+        holder.recibirMensajeTexto.setVisibility(View.GONE);
+        holder.recibirImagenPerfil.setVisibility(View.GONE);
+        holder.mensajeImagenEnviar.setVisibility(View.GONE);
+        holder.mensajeImagenRecibir.setVisibility(View.GONE);
 
         if (TipoMensaje.equals(texto)) {
 
-                    holder.recibirMensajeTexto.setVisibility(View.GONE);
-                    holder.recibirImagenPerfil.setVisibility(View.GONE);
-
                     if (DeUsuarioId.equals(mensajeEnviadoID)) {
+
+                        holder.enviarMensajeTexto.setVisibility(View.VISIBLE);
+
                         holder.enviarMensajeTexto.setBackgroundResource(R.drawable.enviar_mensaje_layout);
                         holder.enviarMensajeTexto.setTextColor(Color.WHITE);
                         holder.enviarMensajeTexto.setText(mensajes.getMensaje());
 
                     } else {
-                        holder.enviarMensajeTexto.setVisibility(View.GONE);
                         holder.recibirImagenPerfil.setVisibility(View.VISIBLE);
                         holder.recibirMensajeTexto.setVisibility(View.VISIBLE);
 
@@ -106,13 +120,136 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.Mensaj
 
                     }
 
+                }else if(TipoMensaje.equals("imagen")) {
+            if (DeUsuarioId.equals(mensajeEnviadoID)) {
+                holder.mensajeImagenEnviar.setVisibility(View.VISIBLE);
+                Picasso.get().load(mensajes.getMensaje()).into(holder.mensajeImagenEnviar);
+            } else {
+                holder.recibirImagenPerfil.setVisibility(View.VISIBLE);
+                holder.mensajeImagenRecibir.setVisibility(View.VISIBLE);
+                Picasso.get().load(mensajes.getMensaje()).into(holder.mensajeImagenRecibir);
+
+            }
+
+
+        }
+
+        if(DeUsuarioId.equals(mensajeEnviadoID)){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(usuarioMensajes.get(position).getTipo().equals("texto")){
+                        CharSequence opciones[] = new CharSequence[]{
+                            "Elminar Mensaje",
+
+                        };
+                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
+                        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0){
+                                    EliminarMensajesEnviados(position, holder);
+                                    Intent intent = new Intent(holder.itemView.getContext(), MensajesAdapter.class);
+                                    holder.itemView.getContext().startActivity(intent);
+
+                                }
+                            }
+                        });
+                        builder.show();
+
+                    }else if(usuarioMensajes.get(position).getTipo().equals("imagen")){
+                        CharSequence opciones[] = new CharSequence[]{
+                                "Elminar Mensjae",
+
+                        };
+                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
+                        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0){
+                                    EliminarMensajesEnviados(position, holder);
+                                    Intent intent = new Intent(holder.itemView.getContext(), MensajesAdapter.class);
+                                    holder.itemView.getContext().startActivity(intent);
+
+
+                                }
+                            }
+                        });
+                        builder.show();
+
+                    }
                 }
+            });
+
+        }else{
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(usuarioMensajes.get(position).getTipo().equals("texto")){
+                        CharSequence opciones[] = new CharSequence[]{
+                                "Elminar Mensaje",
+
+                        };
+                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
+                        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0){
+
+                                    EliminarMensajesEnviados(position, holder);
+                                    Intent intent = new Intent(holder.itemView.getContext(), MensajesAdapter.class);
+                                    holder.itemView.getContext().startActivity(intent);
+                                }
+                            }
+                        });
+                        builder.show();
+
+                    }else if(usuarioMensajes.get(position).getTipo().equals("imagen")){
+                        CharSequence opciones[] = new CharSequence[]{
+                                "Elminar Mensaje",
+
+                        };
+                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
+                        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0){
+                                    EliminarMensajesEnviados(position, holder);
+                                    Intent intent = new Intent(holder.itemView.getContext(), MensajesAdapter.class);
+                                    holder.itemView.getContext().startActivity(intent);
+                                }
+                            }
+                        });
+                        builder.show();
+
+                    }
+                }
+            });
+
+
+
+        }
 
     }
 
     @Override
     public int getItemCount() {
         return usuarioMensajes.size();
+    }
+
+    private void EliminarMensajesEnviados(final int position, final MensajesViewHolder holder){
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("Mensajes").child(usuarioMensajes.get(position).getDe())
+                .child(usuarioMensajes.get(position).getMensaje())
+                .removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+
+                        }
+                    }
+                });
+
     }
 
 

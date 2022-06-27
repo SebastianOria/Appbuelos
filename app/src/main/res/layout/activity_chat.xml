@@ -24,7 +24,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/chat_toolbar"
-        android:layout_marginTop="1dp">
+        android:layout_marginTop="1dp"
+        android:layout_above="@+id/chat_linearLayout"
+        >
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -38,12 +40,19 @@
         android:layout_alignParentBottom="true"
         >
 
+        <ImageView
+            android:id="@+id/enviar_archivos_boton"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/enviarimagen"></ImageView>
+
         <EditText
             android:id="@+id/mensaje"
-            android:layout_width="344dp"
-            android:layout_height="56dp"
+            android:layout_width="350dp"
+            android:layout_height="match_parent"
             android:background="@drawable/back"
             android:hint="Ingrese el mensaje"
+            android:maxLines="10"
             android:padding="10dp"
 
             />

@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -53,6 +54,7 @@ public class SetupActivity extends AppCompatActivity {
     private Uri image_url;
     StorageReference  storageReference;
     String storagepath = "imgperfil/*";
+    private String token;
 
 
     private Toolbar toolbar;
@@ -159,25 +161,37 @@ public class SetupActivity extends AppCompatActivity {
             dialog.show();
             dialog.setCanceledOnTouchOutside(false);
 
-            HashMap map = new HashMap();
-            map.put("nombre", nom);
+            String token = String.valueOf(FirebaseMessaging.getInstance().getToken());
 
-
-            UserRef.child(CurrentUserID).updateChildren(map).addOnCompleteListener(new OnCompleteListener() {
+            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
                 @Override
-                public void onComplete(@NonNull Task task) {
-                    if(task.isSuccessful()){
-                        Toast.makeText(SetupActivity.this, "Datos Guardados", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                        EnviarALInicio();
+                public void onComplete(@NonNull Task<String> task) {
+                      if(task.isSuccessful()){
+                          HashMap map = new HashMap();
+                          map.put("nombre", nom);
+                          map.put("token",token);
 
-                    }else{
+                          UserRef.child(CurrentUserID).updateChildren(map).addOnCompleteListener(new OnCompleteListener() {
+                              @Override
+                              public void onComplete(@NonNull Task task) {
+                                  if(task.isSuccessful()){
+                                      Toast.makeText(SetupActivity.this, "Datos Guardados", Toast.LENGTH_SHORT).show();
+                                      dialog.dismiss();
+                                      EnviarALInicio();
 
-                        String err = task.getException().getMessage();
-                        Toast.makeText(SetupActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                    }
+                                  }else{
+
+                                      String err = task.getException().getMessage();
+                                      Toast.makeText(SetupActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                  }
+                              }
+                          });
+
+                      }
                 }
             });
+
+
         }
     }
 
