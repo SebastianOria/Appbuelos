@@ -27,16 +27,16 @@
         android:layout_marginRight="10dp"
 
         />
+
     <Button
         android:id="@+id/boton_perfil"
-        android:text="Actualizar perfil"
-        android:layout_below="@id/nombre_perfil"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/botones"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
+        android:layout_below="@id/nombre_perfil"
+        android:layout_marginTop="20dp"
+        android:textColor="#fff"
+        android:background="@drawable/botones"
+        android:text="Actualizar perfil" />
 
 
 </RelativeLayout>

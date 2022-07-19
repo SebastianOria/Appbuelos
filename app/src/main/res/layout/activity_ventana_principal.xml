@@ -26,7 +26,7 @@ tools:context=".VentanaPrincipalActivity">
             android:id="@+id/main_tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/celeste2"
+            android:background="#7983FF"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
 

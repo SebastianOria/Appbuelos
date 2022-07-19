@@ -3,17 +3,27 @@ package com.example.clases;
 
 
 public class Contactos {
-    private String nombre, id, Foto, Telefono;
+    private String nombre, id, Foto, token;
 
 
     public Contactos() {
     }
 
-    public Contactos( String id, String nombre, String Foto, String Telefono) {
+    public Contactos( String id, String nombre, String Foto, String token) {
         this.id = id;
         this.nombre = nombre;
         this.Foto = Foto;
-        this.Telefono = Telefono;
+        this.token = token;
+
+    }
+
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getNombre() {
@@ -39,11 +49,5 @@ public class Contactos {
         Foto = foto;
     }
 
-    public String getTelefono() {
-        return Telefono;
-    }
 
-    public void setTelefono(String telefono) {
-        Telefono = telefono;
-    }
 }

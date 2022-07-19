@@ -4,9 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/celeste2"
+
     >
 
+    <include
+        android:id="@+id/app_main_toolbar"
+        layout="@layout/toolbar_principal"
+
+        android:layout_width="match_parent"
+        android:layout_height="126dp" />
     <Button
         android:id="@+id/button5"
         android:layout_width="221dp"
@@ -29,9 +35,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="144dp"
-        android:layout_marginEnd="144dp"
-        android:layout_marginBottom="634dp"
+        android:layout_marginStart="155dp"
+        android:layout_marginEnd="133dp"
+        android:layout_marginBottom="652dp"
         android:text="Ajustes"
         android:textColor="@color/black"
         android:textSize="32dp"
@@ -46,8 +52,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginEnd="61dp"
-        android:layout_marginBottom="490dp"
+        android:layout_marginEnd="54dp"
+        android:layout_marginBottom="491dp"
 
         android:text="Tamaño de Fuente"
         android:textColor="@color/black"
@@ -64,11 +70,20 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="65dp"
-        android:layout_marginEnd="66dp"
-        android:layout_marginBottom="319dp"
+        android:layout_marginStart="62dp"
+        android:layout_marginEnd="69dp"
+        android:layout_marginBottom="322dp"
         android:text="Ajustes de Perfil"
         android:textColor="@color/black"
         android:textSize="30dp" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="208dp"
+        android:layout_height="75dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="119dp"
+        android:layout_marginBottom="417dp" />
 
 </RelativeLayout>

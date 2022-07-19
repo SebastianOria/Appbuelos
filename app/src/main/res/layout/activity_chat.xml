@@ -17,16 +17,14 @@
         >
 
     </include>
-    □
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listamensajesrecicler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/chat_toolbar"
-        android:layout_marginTop="1dp"
         android:layout_above="@+id/chat_linearLayout"
-        >
+        android:layout_below="@+id/chat_toolbar"
+        android:layout_marginTop="1dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -48,7 +46,7 @@
 
         <EditText
             android:id="@+id/mensaje"
-            android:layout_width="350dp"
+            android:layout_width="301dp"
             android:layout_height="match_parent"
             android:background="@drawable/back"
             android:hint="Ingrese el mensaje"

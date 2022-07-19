@@ -130,13 +130,19 @@ public class SetupActivity extends AppCompatActivity {
                                 UserRef.child(CurrentUserID).updateChildren(map).addOnSuccessListener(new OnSuccessListener() {
                                     @Override
                                     public void onSuccess(Object o) {
+
+
                                         dialog.dismiss();
                                     }
                                 });
+
                                 Picasso.get()
                                         .load(url)
+                                        .error(R.drawable.foto)
                                         .placeholder(R.drawable.foto)
                                         .into(image_setup);
+
+                                dialog.dismiss();
 
                             }
 

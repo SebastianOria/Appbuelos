@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText numero, codigo, rut;
+    private EditText  codigo, rut;
     private Button enviar_numero, enviar_codigo;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks;
     private String mVerification;
@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        numero = (EditText)findViewById(R.id.nombre);
+
         rut = (EditText) findViewById(R.id.rut);
         codigo = (EditText) findViewById(R.id.codigo);
         enviar_numero = (Button) findViewById(R.id.siguiente);
@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
         enviar_codigo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                numero.setVisibility(View.GONE);
+
                 rut.setVisibility(View.GONE);
                 enviar_numero.setVisibility(View.GONE);
                 String verificationCode = codigo.getText().toString();
@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Ingrese el codigo recibido", Toast.LENGTH_SHORT).show();
                 }else{
 
-                    loadingBar.setTitle("ingresando");
+                    loadingBar.setTitle("Ingresando");
                     loadingBar.setMessage(".............");
                     loadingBar.show();
                     loadingBar.setCancelable(true);
@@ -117,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onVerificationFailed(@NonNull FirebaseException e) {
                 loadingBar.dismiss();
                 Toast.makeText(LoginActivity.this, "Numero invalido, Intente denuevo", Toast.LENGTH_SHORT).show();
-                numero.setVisibility(View.VISIBLE);
+
                 enviar_numero.setVisibility((View.VISIBLE));
                 rut.setVisibility(View.VISIBLE);
                 codigo.setVisibility(View.GONE);
@@ -128,12 +128,13 @@ public class LoginActivity extends AppCompatActivity {
             mVerification = verificacionid;
             mResendingToken = token;
             loadingBar.dismiss();
-                Toast.makeText(LoginActivity.this, "Codigo invalido, Intente denuevo", Toast.LENGTH_SHORT).show();
-                numero.setVisibility(View.GONE);
+
+
                 enviar_numero.setVisibility((View.GONE));
                 rut.setVisibility(View.GONE);
                 codigo.setVisibility(View.VISIBLE);
                 enviar_codigo.setVisibility(View.VISIBLE);
+                Toast.makeText(LoginActivity.this, "Codigo invalido, Intente denuevo", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -156,30 +157,10 @@ private void signInPhoneAuthCredential(PhoneAuthCredential credential){
                     RootRef = FirebaseDatabase.getInstance().getReference();
                     auth = FirebaseAuth.getInstance();
                     CurrentUserID= auth.getCurrentUser().getUid();
-                    String num = numero.getText().toString();
+
                     String rt = rut.getText().toString();
-                    HashMap map = new HashMap();
-                    map.put("Rut", num);
-                    map.put("Telefono", rt);
-
-                    RootRef.child("Usuarios").child(CurrentUserID).updateChildren(map).addOnCompleteListener(new OnCompleteListener() {
-                        @Override
-                        public void onComplete(@NonNull Task task) {
-                            if(task.isSuccessful()) {
-                                Toast.makeText(LoginActivity.this, "Datos Guardados", Toast.LENGTH_SHORT).show();
-
-                            }else{
-
-                                String err = task.getException().getMessage();
-                                Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
 
                     EnviarAlInicio();
-
-
 
                 }else{
 

@@ -32,9 +32,12 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatsFragments extends Fragment {
-
+    private ArrayList<Contactos>a = new ArrayList<Contactos>();
     private View ChatViewUnica;
     private RecyclerView ChatLista;
+    ArrayList<String> lista = new ArrayList<String>();
+
+
     private DatabaseReference databaseReference, contactosRef;
 
     private static FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -50,6 +53,7 @@ public class ChatsFragments extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         databaseReference = FirebaseDatabase.getInstance().getReference();
         contactosRef = FirebaseDatabase.getInstance().getReference().child(CurrentUserId);
         ChatViewUnica = inflater.inflate(R.layout.fragment_chats_fragments, container, false);
@@ -70,42 +74,48 @@ public class ChatsFragments extends Fragment {
         FirebaseRecyclerAdapter<Contactos, ChatsViewHolder> adapter =
                 new FirebaseRecyclerAdapter<Contactos, ChatsViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull ChatsViewHolder chatsViewHolder, int i, @NonNull Contactos contactos) {
+            protected void onBindViewHolder(@NonNull ChatsViewHolder chatsViewHolder, int i, @NonNull Contactos model) {
 
                 databaseReference.child("Usuarios").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
 
-                           final String getuid = dataSnapshot.getKey();
+                        for(DataSnapshot dataSnapshot : snapshot.getChildren() ) {
 
-                            if (!getuid.equals(CurrentUserId)) {
-                                final String getName = dataSnapshot.child("nombre").getValue().toString();
-                                final String getPic = dataSnapshot.child("Foto").getValue().toString();
+                            final String id = dataSnapshot.getKey();
+
+
+                            boolean a = id.equals(CurrentUserId);
+                            boolean b = lista.contains(id);
+
+                                if(!a && !b) {
+
+                                String nombre = snapshot.child(id).child("nombre").getValue(String.class);
+                                String Foto = snapshot.child(id).child("Foto").getValue(String.class);;
+                                String token = snapshot.child(id).child("token").getValue().toString();
 
                                 Picasso.get()
-                                        .load(getPic)
+                                        .load(Foto)
+                                        .error(R.drawable.foto)
                                         .placeholder(R.drawable.foto)
                                         .into(chatsViewHolder.profilePic);
 
-                                chatsViewHolder.name.setText(getName);
-                                chatsViewHolder.itemView.setVisibility(View.VISIBLE);
+                                chatsViewHolder.name.setText(nombre);
+
                                 chatsViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
                                         Intent intent = new Intent(getContext(), ChatActivity.class);
-                                        intent.putExtra("user_id", getuid);
-                                        intent.putExtra("user_nombre", getName);
-                                        intent.putExtra("user_imagen", getPic);
+                                        intent.putExtra("user_id", id);
+                                        intent.putExtra("user_nombre", nombre);
+                                        intent.putExtra("user_imagen", Foto);
                                         startActivity(intent);
                                     }
                                 });
-                            }else{
-                                chatsViewHolder.itemView.setVisibility(View.GONE);
                             }
+                          lista.add(id);
 
                         }
-
                         }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
@@ -118,9 +128,12 @@ public class ChatsFragments extends Fragment {
             @Override
             public ChatsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
-                return new ChatsViewHolder(view);
+                ChatsViewHolder viewHolder = new ChatsViewHolder(view);
+                return viewHolder;
             }
         };
+
+
         ChatLista.setAdapter(adapter);
         adapter.startListening();
     }

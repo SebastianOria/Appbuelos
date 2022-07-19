@@ -69,7 +69,7 @@ public class VentanaPrincipalActivity extends AppCompatActivity
         databaseReference.child(CurrentUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.hasChild("nombre")) {
+                if (!snapshot.hasChild("")) {
                     CompletarDatosUsuario();
                 }
             }

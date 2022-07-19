@@ -1,10 +1,12 @@
 package com.example.aplicacion;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.Image;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,36 +27,42 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.MensajesViewHolder> {
-
+    private Context context;
     private List<Mensajes> usuarioMensajes;
     private FirebaseAuth auth;
+    public TextToSpeech mtts;
     private DatabaseReference UserRef;
-    final private String  texto = "texto";
-    public MensajesAdapter(List<Mensajes> usuarioMensajes){
+    final private String texto = "texto";
+
+    public MensajesAdapter(List<Mensajes> usuarioMensajes) {
         this.usuarioMensajes = usuarioMensajes;
 
+
     }
-    public class MensajesViewHolder extends RecyclerView.ViewHolder{
+
+    public class MensajesViewHolder extends RecyclerView.ViewHolder {
+
         public TextView enviarMensajeTexto, recibirMensajeTexto;
         public CircleImageView recibirImagenPerfil;
-        public ImageView mensajeImagenEnviar, mensajeImagenRecibir;
+        public ImageView mensajeImagenEnviar, mensajeImagenRecibir, mensaje_recibiraudio;
 
 
-        public MensajesViewHolder(@NonNull View itemView){
+        public MensajesViewHolder(@NonNull View itemView) {
+
             super(itemView);
 
-            enviarMensajeTexto=(TextView) itemView.findViewById(R.id.enviar_mensaje);
-            recibirMensajeTexto=(TextView) itemView.findViewById(R.id.recibir_mensaje);
-            recibirImagenPerfil=(CircleImageView) itemView.findViewById(R.id.mensaje_image_perfil);
-            mensajeImagenEnviar=(ImageView) itemView.findViewById(R.id.mensaje_enviar_imagen);
-            mensajeImagenRecibir=(ImageView) itemView.findViewById(R.id.mensaje_recibir_imagen);
+            enviarMensajeTexto = (TextView) itemView.findViewById(R.id.enviar_mensaje);
+            recibirMensajeTexto = (TextView) itemView.findViewById(R.id.recibir_mensaje);
+            recibirImagenPerfil = (CircleImageView) itemView.findViewById(R.id.mensaje_image_perfil);
+            mensajeImagenEnviar = (ImageView) itemView.findViewById(R.id.mensaje_enviar_imagen);
+            mensajeImagenRecibir = (ImageView) itemView.findViewById(R.id.mensaje_recibir_imagen);
+            mensaje_recibiraudio = (ImageView) itemView.findViewById(R.id.mensaje_recibiraudio);
 
         }
 
@@ -63,22 +71,28 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.Mensaj
     @NonNull
     @Override
     public MensajesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.usuario_mensaje_layout, parent, false);
         auth = FirebaseAuth.getInstance();
+        context = parent.getContext();
         return new MensajesViewHolder(view);
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull MensajesViewHolder holder, int position) {
+
         String mensajeEnviadoID = auth.getCurrentUser().getUid();
         Mensajes mensajes = usuarioMensajes.get(position);
         String DeUsuarioId = mensajes.getDe();
         String TipoMensaje = mensajes.getTipo();
         UserRef = FirebaseDatabase.getInstance().getReference().child("Usuarios").child(DeUsuarioId);
+
         UserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.hasChild("Foto")){
+                if (snapshot.hasChild("Foto")) {
                     String ImageRecibido = snapshot.child("Foto").getValue().toString();
                     Picasso.get().load(ImageRecibido).placeholder(R.drawable.foto).into(holder.recibirImagenPerfil);
 
@@ -92,35 +106,52 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.Mensaj
             }
         });
 
-
         holder.enviarMensajeTexto.setVisibility(View.GONE);
         holder.recibirMensajeTexto.setVisibility(View.GONE);
         holder.recibirImagenPerfil.setVisibility(View.GONE);
         holder.mensajeImagenEnviar.setVisibility(View.GONE);
         holder.mensajeImagenRecibir.setVisibility(View.GONE);
+        holder.mensaje_recibiraudio.setVisibility(View.GONE);
 
         if (TipoMensaje.equals(texto)) {
 
-                    if (DeUsuarioId.equals(mensajeEnviadoID)) {
+            if (DeUsuarioId.equals(mensajeEnviadoID)) {
 
-                        holder.enviarMensajeTexto.setVisibility(View.VISIBLE);
+                holder.enviarMensajeTexto.setVisibility(View.VISIBLE);
 
-                        holder.enviarMensajeTexto.setBackgroundResource(R.drawable.enviar_mensaje_layout);
-                        holder.enviarMensajeTexto.setTextColor(Color.WHITE);
-                        holder.enviarMensajeTexto.setText(mensajes.getMensaje());
+                holder.enviarMensajeTexto.setBackgroundResource(R.drawable.enviar_mensaje_layout);
+                holder.enviarMensajeTexto.setTextColor(Color.WHITE);
+                holder.enviarMensajeTexto.setText(mensajes.getMensaje());
 
-                    } else {
-                        holder.recibirImagenPerfil.setVisibility(View.VISIBLE);
-                        holder.recibirMensajeTexto.setVisibility(View.VISIBLE);
+            } else {
+                holder.recibirImagenPerfil.setVisibility(View.VISIBLE);
+                holder.recibirMensajeTexto.setVisibility(View.VISIBLE);
+                holder.mensaje_recibiraudio.setVisibility(View.VISIBLE);
+                holder.mensaje_recibiraudio.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                        public void onClick(View v) {
+                              String texto = mensajes.getMensaje();
+                          mtts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+                           @Override
+                           public void onInit(int status) {
+                               if (status == TextToSpeech.SUCCESS) {
 
-                        holder.recibirMensajeTexto.setBackgroundResource(R.drawable.recibir_mensaje_layout);
-                        holder.recibirMensajeTexto.setTextColor(Color.BLACK);
-                        holder.recibirMensajeTexto.setText(mensajes.getMensaje());
+                                   mtts.setLanguage(Locale.getDefault());}
+                               mtts.speak(texto, TextToSpeech.QUEUE_FLUSH, null);
 
-
+                           }
+                          });
                     }
+                });
 
-                }else if(TipoMensaje.equals("imagen")) {
+                holder.recibirMensajeTexto.setBackgroundResource(R.drawable.recibir_mensaje_layout);
+                holder.recibirMensajeTexto.setTextColor(Color.BLACK);
+                holder.recibirMensajeTexto.setText(mensajes.getMensaje());
+
+
+            }
+
+        } else if (TipoMensaje.equals("imagen")) {
             if (DeUsuarioId.equals(mensajeEnviadoID)) {
                 holder.mensajeImagenEnviar.setVisibility(View.VISIBLE);
                 Picasso.get().load(mensajes.getMensaje()).into(holder.mensajeImagenEnviar);
@@ -134,103 +165,47 @@ public class MensajesAdapter extends RecyclerView.Adapter<MensajesAdapter.Mensaj
 
         }
 
-        if(DeUsuarioId.equals(mensajeEnviadoID)){
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(usuarioMensajes.get(position).getTipo().equals("texto")){
-                        CharSequence opciones[] = new CharSequence[]{
-                            "Elminar Mensaje",
-
-                        };
-                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
-                        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which == 0){
-                                    EliminarMensajesEnviados(position, holder);
-                                    Intent intent = new Intent(holder.itemView.getContext(), MensajesAdapter.class);
-                                    holder.itemView.getContext().startActivity(intent);
-
-                                }
-                            }
-                        });
-                        builder.show();
-
-                    }else if(usuarioMensajes.get(position).getTipo().equals("imagen")){
-                        CharSequence opciones[] = new CharSequence[]{
-                                "Elminar Mensjae",
-
-                        };
-                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
-                        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which == 0){
-                                    EliminarMensajesEnviados(position, holder);
-                                    Intent intent = new Intent(holder.itemView.getContext(), MensajesAdapter.class);
-                                    holder.itemView.getContext().startActivity(intent);
+        if (DeUsuarioId.equals(mensajeEnviadoID)) {
 
 
-                                }
-                            }
-                        });
-                        builder.show();
-
-                    }
-                }
-            });
-
-        }else{
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(usuarioMensajes.get(position).getTipo().equals("texto")){
-                        CharSequence opciones[] = new CharSequence[]{
-                                "Elminar Mensaje",
-
-                        };
-                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
-                        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which == 0){
-
-                                    EliminarMensajesEnviados(position, holder);
-                                    Intent intent = new Intent(holder.itemView.getContext(), MensajesAdapter.class);
-                                    holder.itemView.getContext().startActivity(intent);
-                                }
-                            }
-                        });
-                        builder.show();
-
-                    }else if(usuarioMensajes.get(position).getTipo().equals("imagen")){
-                        CharSequence opciones[] = new CharSequence[]{
-                                "Elminar Mensaje",
-
-                        };
-                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
-                        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which == 0){
-                                    EliminarMensajesEnviados(position, holder);
-                                    Intent intent = new Intent(holder.itemView.getContext(), MensajesAdapter.class);
-                                    holder.itemView.getContext().startActivity(intent);
-                                }
-                            }
-                        });
-                        builder.show();
-
-                    }
-                }
-            });
+        } else {
 
 
 
         }
 
     }
+
+    private void speak(String texto) {
+
+        mtts.speak(texto, TextToSpeech.QUEUE_FLUSH, null);
+        if (!mtts.isSpeaking()) {
+            mtts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status == TextToSpeech.SUCCESS) {
+                        int result = mtts.setLanguage(Locale.ENGLISH);
+                        if (result == TextToSpeech.LANG_MISSING_DATA
+                                || result == TextToSpeech.LANG_NOT_SUPPORTED
+                        ) {
+                            Log.e("TTS", "Lenguaje no soportado");
+
+                        }
+                    } else {
+                        Log.e("TTS", "Iniciacion fallida");
+                    }
+                }
+            });
+
+            speak("HELLOW");
+
+
+        }
+
+    }
+
+
+
 
     @Override
     public int getItemCount() {
